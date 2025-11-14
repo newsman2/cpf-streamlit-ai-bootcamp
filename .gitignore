@@ -5,3 +5,9 @@
 .env.production
 
 __pycache__
+.streamlit/
+
+venv
+env
+
+chroma_langchain_db
