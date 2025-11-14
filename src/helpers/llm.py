@@ -2,11 +2,32 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 import tiktoken
+from langchain_openai.chat_models import ChatOpenAI
+import streamlit as st
 
-load_dotenv('.env')
+load_dotenv(".env")
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+OPENAI_MODEL = st.secrets["OPENAI_MODEL"]
 
 # Pass the API Key to the OpenAI Client
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+def generate_response(messages):
+    from langchain.chat_models import init_chat_model
+    import time
+
+    model = init_chat_model(
+        OPENAI_MODEL,
+        temperature=0,
+        timeout=10,
+        max_tokens=1000
+    )
+    # Use with chat models
+    response = model.stream(messages)
+
+    for word in response:
+        yield word
+        time.sleep(0.05)
 
 def get_embedding(input, model='text-embedding-3-small'):
     response = client.embeddings.create(
