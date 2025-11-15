@@ -4,3 +4,4 @@
 pytest
 
 black
+isort==7.0.0
