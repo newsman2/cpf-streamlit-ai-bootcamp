@@ -53,19 +53,6 @@ def save_collection(collection_name, splitted_documents, embeddings_model=None):
         persist_directory=PERSIST_DIR,  # Where to save data locally, remove if not neccesary
     )
 
-    # st.success(
-    #    f"Ingested {len(splitted_documents)} chunks into Chroma vector store and saved to '{PERSIST_DIR}'"
-    # )
-    # st.session_state["vectordb_exists"] = True
-
-    # print(vector_store._collection.peek(limit=1))
-
-    # response = st.write_stream(llm.generate_response_from_context(prompt_text))
-    # response = llm.generate_response_from_context(prompt_text)
-    # stream_response(response)
-
-    # return response
-
 
 def stream_response(response):
     with st.chat_message("assistant"):
@@ -158,7 +145,7 @@ with st.container():
             # attempt to lazily load chain if collection exists on disk
             embeddings_model = OpenAIEmbeddings(model="text-embedding-3-small")
             try:
-                chain = make_retrieval_chain(
+                chain = llm.make_retrieval_chain(
                     selected_collection, embeddings_model, llm_model=OPENAI_MODEL
                 )
                 st.session_state.conversations[selected_collection] = chain
