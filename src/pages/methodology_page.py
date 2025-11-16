@@ -53,7 +53,7 @@ st.markdown(
     """
 )
 
-st.subheader("Retrieval Augmented Generation (RAG)")
+st.subheader("Retrieval Augmented Generation (RAG) with Word Document Creation Tool")
 st.image(
     image="./assets/flowchart-rag.png",
     caption="Figure 2 Flowchart for RAG (Retrieval Page)",
@@ -67,4 +67,15 @@ st.markdown(
  After which the user can select a collection name and perform a query on the uploaded documents.
  The UI will display an output of the retrieved document chunks with source references.
  """
+)
+st.markdown(
+    """
+    **Test Prompt**
+```
+Can you help me do the following below. 
+
+Step 1 - Provide a 100-word summary of CareShield 
+Step 2 - Export the summary into a single word document
+```
+"""
 )
