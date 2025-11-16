@@ -21,7 +21,14 @@ st.markdown("""
             - Show users which documents are reference during RAG process
             """)
 st.subheader("Data Sources")
-st.markdown(""" - [CPF Data](https://www.cpf.gov.sg/member/infohub) """)
+st.markdown("""
+            - [CPF](https://www.cpf.gov.sg/)
+            - [CPF Educational Resources](https://www.cpf.gov.sg/member/infohub/educational-resources?page=1&pagesize=9)
+            - [CPF-related announcements](https://www.cpf.gov.sg/employer/infohub/news/cpf-related-announcements)
+            - [CPF Investment](https://www.cpf.gov.sg/content/dam/web/member/business-partners/documents/CPFInvestmentGuidelinespdf.pdf)
+            - [CPF Withdrawal Rules](https://www.cpf.gov.sg/content/dam/web/member/faq/retirement-income/documents/withdrawal-rules-table.pdf)
+            - [CPF Contribution Rate Table](https://www.cpf.gov.sg/content/dam/web/employer/employer-obligations/documents/CPFcontributionratesfrom1Jan2026.pdf)
+            """)
 
 st.subheader("Features")
 st.markdown(""" 
