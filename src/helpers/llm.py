@@ -7,15 +7,15 @@ from langchain.chat_models import init_chat_model
 from langchain_openai.chat_models import ChatOpenAI
 from openai import OpenAI
 
-from agents.rag import prompt_with_context
 from helpers import chroma
 
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 OPENAI_MODEL = st.secrets["OPENAI_MODEL"]
+MAX_TOKENS = st.secrets["MAX_TOKENS"]
 
 # Pass the API Key to the OpenAI Client
 client = OpenAI(api_key=OPENAI_API_KEY)
-llm = init_chat_model(OPENAI_MODEL, temperature=0, timeout=10, max_tokens=1000)
+llm = init_chat_model(OPENAI_MODEL, temperature=0, timeout=10, max_tokens=MAX_TOKENS)
 
 
 def make_retrieval_chain(collection_name: str, embeddings, llm_model=OPENAI_MODEL):
@@ -35,16 +35,6 @@ def generate_response(messages):
     # Use with chat models
     response = llm.stream(messages)
 
-    for word in response:
-        yield word
-        time.sleep(0.05)
-
-
-def generate_response_from_context(query):
-    rag_agent = create_agent(llm, tools=[], middleware=[prompt_with_context])
-    response = rag_agent.stream(
-        {"messages": [{"role": "user", "content": query}]},
-    )
     for word in response:
         yield word
         time.sleep(0.05)

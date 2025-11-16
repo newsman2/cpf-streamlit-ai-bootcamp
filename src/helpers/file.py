@@ -1,7 +1,19 @@
 import os
+import re
 import tempfile
 
 import pdfplumber
+
+
+def extract_docx_path(text: str) -> str | None:
+    # Matches only UNIX-style absolute paths ending with .docx
+    pattern = r"(/(?:[\w\-\.]+/)*[\w\-\.]+\.docx)"
+    match = re.search(pattern, text)
+    return match.group(1) if match else None
+
+
+def extract_filename(path: str) -> str:
+    return os.path.basename(path)
 
 
 def extract_text_from_pdf(uploaded_file) -> str:

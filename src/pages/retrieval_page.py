@@ -3,11 +3,13 @@ import os
 from typing import List
 
 import streamlit as st
+from langchain.messages import AIMessage, ToolMessage
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from agents import cpf
 from helpers import file, llm, state
 
 state.ensure_session_states()
@@ -95,7 +97,6 @@ with st.sidebar:
     collections = []
     try:
         # List collections by inspecting the persist directory (Chroma stores per-collection folders)
-
         if os.path.exists(PERSIST_DIR):
             embeddings_model = OpenAIEmbeddings(model="text-embedding-3-small")
             vector_store = Chroma(
@@ -135,7 +136,7 @@ if selected_collection is None:
 
 if selected_collection == "":
     st.info(
-        "Index or load a collection first on the left panel. After indexing, it should appear in the dropdown."
+        "Index or load a collection on the left panel. After indexing, it should appear in the dropdown."
     )
 else:
     st.session_state.conversations_key = selected_collection
@@ -179,9 +180,34 @@ else:
 
             with st.chat_message("assistant"):
                 with st.spinner("Generating response — this may take a minute..."):
-                    # Run chain
-                    result = chain({"question": prompt, "chat_history": []})
-                    answer = result.get("answer")
+                    answer = ""
+                    agent = cpf.init_agent()
+                    result = agent.invoke(
+                        {
+                            "messages": [{"role": "user", "content": prompt}],
+                            "collection_name": selected_collection,
+                        }
+                    )
+                    for msg in result["messages"]:
+                        # If tool returned a docx path, show download button
+                        if isinstance(msg, ToolMessage):
+                            try:
+                                server_path = file.extract_docx_path(msg.content)
+                                # Read file bytes
+                                with open(server_path, "rb") as f:
+                                    file_bytes = f.read()
+                                    filename = file.extract_filename(server_path)
+                                    st.download_button(
+                                        "Download Word Document",
+                                        file_bytes,
+                                        filename,
+                                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                    )
+                            except Exception as e:
+                                st.error(f"Failed to load file: {e}")
+
+                        if isinstance(msg, AIMessage):
+                            answer += msg.content
 
                     # store assistant answer in history
                     st.session_state.chat_history.append(
@@ -204,8 +230,8 @@ else:
 
     st.markdown("---")
     st.subheader("Source documents returned (last query)")
-    if "result" in locals() and result.get("source_documents"):
-        for src in result.get("source_documents"):
+    if "result" in locals() and result.get("context"):
+        for src in result.get("context"):
             meta = getattr(src, "metadata", {})
             page = meta.get("page", "n/a")
             source = meta.get("source", "n/a")
