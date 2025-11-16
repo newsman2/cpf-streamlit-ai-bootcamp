@@ -1,17 +1,18 @@
 import streamlit as st
 
 # region <--------- Streamlit App Configuration --------->
-st.set_page_config(
-    layout="centered",
-    page_title="About"
-)
+st.set_page_config(layout="centered", page_title="About")
 # endregion <--------- Streamlit App Configuration --------->
 
 st.title("About")
 st.header("CPF Assistant")
 
 st.subheader("Project Scope")
-st.markdown("This project aims to build an interactive RAG-based chatbot platform using Streamlit. The system will allow users to upload PDF documents, process their content into embeddings using LangChain, store them in a Chroma vector database, and retrieve relevant information through a conversational chat interface powered by an LLM.")
+st.markdown(
+    """
+    This project aims to build an interactive RAG-based chatbot platform using Streamlit. The system will allow users to upload PDF documents, process their content into embeddings using LangChain, store them in a Chroma vector database, and retrieve relevant information through a conversational chat interface powered by an LLM.
+    """
+)
 
 st.subheader("Objectives")
 st.markdown(""" 
@@ -31,7 +32,9 @@ st.markdown("""
             """)
 
 st.subheader("Features")
-st.markdown(""" 
+st.markdown("""
+            - General CPF Assistant
+                - Chatbot that answers questions about Singapore Central Provident Fund (CPF)
             - Retrieval Augmented Generation (RAG)
                 - PDF document ingestion and parsing
                 - Automatic text chunking and metadata extraction
@@ -39,4 +42,3 @@ st.markdown("""
                 - Chroma vector database for similarity search
                 - Display of retrieved document chunks with source references
             """)
-
