@@ -3,7 +3,6 @@ import time
 
 import streamlit as st
 import tiktoken
-from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langchain_chroma import Chroma
@@ -13,7 +12,6 @@ from openai import OpenAI
 
 from agents.rag import prompt_with_context
 
-load_dotenv(".env")
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 OPENAI_MODEL = st.secrets["OPENAI_MODEL"]
 
