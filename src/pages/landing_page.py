@@ -46,13 +46,9 @@ if prompt:
         st.session_state.chat_history.append(
             {"role": "system", "content": system_message}
         )
-        st.session_state.chat_history.append(
-            {"role": "user", "content": prompt}
-        )
+        st.session_state.chat_history.append({"role": "user", "content": prompt})
 
     with st.chat_message("assistant"):
         messages = st.session_state.chat_history
         response = st.write_stream(llm.generate_response(messages))
-        st.session_state.chat_history.append(
-            {"role": "assistant", "content": response}
-        )
+        st.session_state.chat_history.append({"role": "assistant", "content": response})

@@ -1,4 +1,9 @@
 import streamlit as st
+from langchain_openai import OpenAIEmbeddings
+
+from helpers import chroma, llm
+
+OPENAI_MODEL = st.secrets["OPENAI_MODEL"]
 
 
 def ensure_session_states():
@@ -6,4 +11,11 @@ def ensure_session_states():
         st.session_state.chat_history = []
     if "conversations" not in st.session_state:
         st.session_state.conversations = {}
+        embeddings_model = OpenAIEmbeddings(model="text-embedding-3-small")
+        vector_store = chroma.get_vector_store(embeddings_model)
 
+        for collection in vector_store._client.list_collections():
+            chain = llm.make_retrieval_chain(
+                collection.name, embeddings_model, llm_model=OPENAI_MODEL
+            )
+            st.session_state.conversations[collection.name] = chain

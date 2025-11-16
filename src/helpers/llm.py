@@ -11,6 +11,7 @@ from langchain_openai.chat_models import ChatOpenAI
 from openai import OpenAI
 
 from agents.rag import prompt_with_context
+from helpers import chroma
 
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 OPENAI_MODEL = st.secrets["OPENAI_MODEL"]
@@ -18,6 +19,19 @@ OPENAI_MODEL = st.secrets["OPENAI_MODEL"]
 # Pass the API Key to the OpenAI Client
 client = OpenAI(api_key=OPENAI_API_KEY)
 llm = init_chat_model(OPENAI_MODEL, temperature=0, timeout=10, max_tokens=1000)
+
+
+def make_retrieval_chain(collection_name: str, embeddings, llm_model=OPENAI_MODEL):
+    from langchain_classic.chains import ConversationalRetrievalChain
+
+    vector_store = chroma.get_collection(collection_name, embeddings)
+    retriever = vector_store.as_retriever(search_kwargs={"k": 5})
+    llm = ChatOpenAI(model_name=llm_model, temperature=0)
+    chain = ConversationalRetrievalChain.from_llm(
+        llm, retriever, return_source_documents=True
+    )
+
+    return chain
 
 
 def generate_response(messages):

@@ -8,21 +8,26 @@ from langchain_core.documents import Document
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from helpers import file, llm, state
+from helpers import chroma, file, llm, state
 
 state.ensure_session_states()
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 200
 
 # region <--------- Streamlit App Configuration --------->
 st.set_page_config(layout="centered", page_title="Home")
 # endregion <--------- Streamlit App Configuration --------->
 
 st.title("Retrieval (RAG)")
-PERSIST_DIR = "./chroma_langchain_db"
+PERSIST_DIR = st.secrets["PERSIST_DIR"]
 OPENAI_MODEL = st.secrets["OPENAI_MODEL"]
+
 
 def split_document(docs):
     # Split into chunks
-    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
+    )
     splitted_documents = []
     for d in docs:
         splitted_documents.extend(splitter.split_documents([d]))
@@ -53,7 +58,7 @@ def save_collection(collection_name, splitted_documents, embeddings_model=None):
     # )
     # st.session_state["vectordb_exists"] = True
 
-    #print(vector_store._collection.peek(limit=1))
+    # print(vector_store._collection.peek(limit=1))
 
     # response = st.write_stream(llm.generate_response_from_context(prompt_text))
     # response = llm.generate_response_from_context(prompt_text)
@@ -68,28 +73,6 @@ def stream_response(response):
         st.write_stream(response)
     # st.write_stream(response)
     st.session_state.messages.append({"role": "assistant", "content": response})
-
-
-def get_chroma_collection(collection_name: str, embeddings) -> Chroma:
-    vector_store = Chroma(
-        collection_name=collection_name,
-        embedding_function=embeddings,
-        persist_directory=PERSIST_DIR,
-    )
-    return vector_store
-
-
-def make_retrieval_chain(collection_name: str, embeddings, llm_model=OPENAI_MODEL):
-    from langchain_classic.chains import ConversationalRetrievalChain
-
-    vector_store = get_chroma_collection(collection_name, embeddings)
-    retriever = vector_store.as_retriever(search_kwargs={"k": 5})
-    llm = ChatOpenAI(model_name=llm_model, temperature=0)
-    chain = ConversationalRetrievalChain.from_llm(
-        llm, retriever, return_source_documents=True
-    )
-
-    return chain
 
 
 with st.sidebar:
@@ -117,15 +100,8 @@ with st.sidebar:
                 splitted_docs = split_document(docs)
                 save_collection(collection_name, splitted_docs, embeddings_model)
 
-                # total_chunks = 0
-                # for f in uploaded_files:
-                #    path = save_uploaded_file(f)
-                #    texts = load_and_split_pdf(path)
-                #    total_chunks += len(texts)
-                #    index_documents_to_chroma(texts, collection_name, embeddings)
-
                 # After saving, create retrieval chain and store it in session_state
-                chain = make_retrieval_chain(
+                chain = llm.make_retrieval_chain(
                     collection_name, embeddings_model, llm_model=OPENAI_MODEL
                 )
                 st.session_state.conversations[collection_name] = chain
@@ -164,13 +140,19 @@ selected_collection = ""
 with st.container():
     st.header("Chat with a collection")
 
-    selected_collection = st.selectbox("Choose collection to query", options=[""] + list(st.session_state.conversations.keys()), key="selected_coll")
+    selected_collection = st.selectbox(
+        "Choose collection to query",
+        options=[""] + list(st.session_state.conversations.keys()),
+        key="selected_coll",
+    )
 
     if selected_collection is None:
         selected_collection = ""
 
     if selected_collection == "":
-        st.info("Index or load a collection first on the left panel. After indexing, it should appear in the dropdown.")
+        st.info(
+            "Index or load a collection first on the left panel. After indexing, it should appear in the dropdown."
+        )
     else:
         if selected_collection not in st.session_state.conversations:
             # attempt to lazily load chain if collection exists on disk
