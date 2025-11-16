@@ -13,7 +13,7 @@ st.title("CPF Assistant")
 
 prompt = st.chat_input("What do you want to know about CPF?")
 
-for message in st.session_state.chat_history:
+for message in st.session_state.cpf_assistant_chat_history:
     if message["role"] == "system":
         continue
     with st.chat_message(message["role"]):
@@ -37,12 +37,16 @@ if prompt:
         Answer:#### <step 1 output>
         回答(概括):#### <step 2 output>
         """
-        st.session_state.chat_history.append(
+        st.session_state.cpf_assistant_chat_history.append(
             {"role": "system", "content": system_message}
         )
-        st.session_state.chat_history.append({"role": "user", "content": prompt})
+        st.session_state.cpf_assistant_chat_history.append(
+            {"role": "user", "content": prompt}
+        )
 
     with st.chat_message("assistant"):
-        messages = st.session_state.chat_history
+        messages = st.session_state.cpf_assistant_chat_history
         response = st.write_stream(llm.generate_response(messages))
-        st.session_state.chat_history.append({"role": "assistant", "content": response})
+        st.session_state.cpf_assistant_chat_history.append(
+            {"role": "assistant", "content": response}
+        )

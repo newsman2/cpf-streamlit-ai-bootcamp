@@ -54,14 +54,6 @@ def save_collection(collection_name, splitted_documents, embeddings_model=None):
     )
 
 
-def stream_response(response):
-    with st.chat_message("assistant"):
-        # response = st.write_stream(llm.generate_response(prompt_text))
-        st.write_stream(response)
-    # st.write_stream(response)
-    st.session_state.messages.append({"role": "assistant", "content": response})
-
-
 with st.sidebar:
     st.header("Upload & Index PDFs")
 
@@ -124,36 +116,81 @@ with st.sidebar:
 
 selected_collection = ""
 
-with st.container():
-    st.header("Chat with a collection")
+st.header("Chat with a collection")
 
-    selected_collection = st.selectbox(
-        "Choose collection to query",
-        options=[""] + list(st.session_state.conversations.keys()),
-        key="selected_coll",
+options = [""] + list(st.session_state.conversations.keys())
+
+conversations_key = st.session_state.conversations_key
+index = options.index(conversations_key) if conversations_key in options else 0
+
+selected_collection = st.selectbox(
+    "Choose collection to query",
+    options=options,
+    key="selected_coll",
+    index=index,
+)
+
+if selected_collection is None:
+    selected_collection = ""
+
+if selected_collection == "":
+    st.info(
+        "Index or load a collection first on the left panel. After indexing, it should appear in the dropdown."
     )
+else:
+    st.session_state.conversations_key = selected_collection
+    if selected_collection not in st.session_state.conversations:
+        # attempt to lazily load chain if collection exists on disk
+        embeddings_model = OpenAIEmbeddings(model="text-embedding-3-small")
+        try:
+            chain = llm.make_retrieval_chain(
+                selected_collection, embeddings_model, llm_model=OPENAI_MODEL
+            )
+            st.session_state.conversations[selected_collection] = chain
+            st.success(f"Loaded collection '{selected_collection}'.")
+        except Exception as e:
+            st.error(f"Failed to load collection: {e}")
 
-    if selected_collection is None:
-        selected_collection = ""
+    chain = st.session_state.conversations.get(selected_collection)
 
-    if selected_collection == "":
-        st.info(
-            "Index or load a collection first on the left panel. After indexing, it should appear in the dropdown."
-        )
+    # Input box
+    prompt = st.chat_input("Ask a question about the uploaded documents...")
+    if prompt:
+        if chain is None:
+            st.error(
+                "Retrieval chain not ready. Try indexing the collection or reload the app."
+            )
+        else:
+            if len(st.session_state.chat_history) > 0:
+                # Display chat history
+                for i, turn in enumerate(st.session_state.chat_history):
+                    role = turn.get("role")
+                    content = turn.get("content")
+                    if role == "user":
+                        st.chat_message("user").write(content)
+                    else:
+                        st.chat_message("assistant").write(content)
+
+            # append user message to history
+            st.session_state.chat_history.append({"role": "user", "content": prompt})
+
+            with st.chat_message("user"):
+                st.write(prompt)
+
+            with st.chat_message("assistant"):
+                with st.spinner("Generating response — this may take a minute..."):
+                    # Run chain
+                    result = chain({"question": prompt, "chat_history": []})
+                    answer = result.get("answer")
+
+                    # store assistant answer in history
+                    st.session_state.chat_history.append(
+                        {"role": "assistant", "content": answer}
+                    )
+
+                    st.write(answer)
+
     else:
-        if selected_collection not in st.session_state.conversations:
-            # attempt to lazily load chain if collection exists on disk
-            embeddings_model = OpenAIEmbeddings(model="text-embedding-3-small")
-            try:
-                chain = llm.make_retrieval_chain(
-                    selected_collection, embeddings_model, llm_model=OPENAI_MODEL
-                )
-                st.session_state.conversations[selected_collection] = chain
-                st.success(f"Loaded collection '{selected_collection}'.")
-            except Exception as e:
-                st.error(f"Failed to load collection: {e}")
-
-        chain = st.session_state.conversations.get(selected_collection)
         # Display chat history
         chat_container = st.container()
         with chat_container:
@@ -165,39 +202,13 @@ with st.container():
                 else:
                     st.chat_message("assistant").write(content)
 
-        # Input box
-        prompt = st.chat_input("Ask a question about the uploaded documents...")
-        if prompt:
-            if chain is None:
-                st.error(
-                    "Retrieval chain not ready. Try indexing the collection or reload the app."
-                )
-            else:
-                # append user message to history
-                st.session_state.chat_history.append(
-                    {"role": "user", "content": prompt}
-                )
-                with st.chat_message("user"):
-                    st.write(prompt)
-
-                with st.chat_message("assistant"):
-                    # Run chain
-                    result = chain({"question": prompt, "chat_history": []})
-                    answer = result.get("answer")
-                    st.write(answer)
-
-                # store assistant answer in history
-                st.session_state.chat_history.append(
-                    {"role": "assistant", "content": answer}
-                )
-
-        st.markdown("---")
-        st.subheader("Source documents returned (last query)")
-        if "result" in locals() and result.get("source_documents"):
-            for src in result.get("source_documents"):
-                meta = getattr(src, "metadata", {})
-                page = meta.get("page", "n/a")
-                source = meta.get("source", "n/a")
-                st.write(
-                    f"**Source**: {source} — page: {page}\n\n{src.page_content[:400]}..."
-                )
+    st.markdown("---")
+    st.subheader("Source documents returned (last query)")
+    if "result" in locals() and result.get("source_documents"):
+        for src in result.get("source_documents"):
+            meta = getattr(src, "metadata", {})
+            page = meta.get("page", "n/a")
+            source = meta.get("source", "n/a")
+            st.write(
+                f"**Source**: {source} — page: {page}\n\n{src.page_content[:400]}..."
+            )

@@ -7,6 +7,10 @@ OPENAI_MODEL = st.secrets["OPENAI_MODEL"]
 
 
 def ensure_session_states():
+    if "cpf_assistant_chat_history" not in st.session_state:
+        st.session_state.cpf_assistant_chat_history = []
+    if "conversations_key" not in st.session_state:
+        st.session_state.conversations_key = ""
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
     if "conversations" not in st.session_state:
