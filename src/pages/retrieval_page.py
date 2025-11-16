@@ -5,10 +5,10 @@ from typing import List
 import streamlit as st
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from helpers import chroma, file, llm, state
+from helpers import file, llm, state
 
 state.ensure_session_states()
 CHUNK_SIZE = 1000

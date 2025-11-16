@@ -1,13 +1,7 @@
 # Set up and run this Streamlit App
-import os
-
 import streamlit as st
-from langchain_chroma import Chroma
-from langchain_core.documents import Document
-from langchain_openai import OpenAIEmbeddings
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from helpers import file, llm, state
+from helpers import llm, state
 
 state.ensure_session_states()
 

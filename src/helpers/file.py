@@ -1,6 +1,8 @@
-import pdfplumber
-import tempfile
 import os
+import tempfile
+
+import pdfplumber
+
 
 def extract_text_from_pdf(uploaded_file) -> str:
     """Return extracted text from an uploaded Streamlit file-like object."""
