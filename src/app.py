@@ -21,9 +21,6 @@ def main():
                 title="Methodology",
                 icon=":material/graph_5:",
             ),
-            st.Page(
-                "pages/settings_page.py", title="Settings", icon=":material/settings:"
-            ),
         ],
         position="top",
     )
