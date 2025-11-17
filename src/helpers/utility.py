@@ -1,4 +1,5 @@
 import hmac
+import re
 
 import streamlit as st
 
@@ -7,6 +8,13 @@ import streamlit as st
 # This includes the sidebar, the title, the footer, and the password check.
 # """
 
+forbidden = r"[!@#$% -_]"
+
+def validate_input():
+    text = st.session_state.collection_name_input
+    if re.search(forbidden, text):
+        st.session_state.collection_name_input = re.sub(forbidden, "", text)
+        st.warning("Forbidden characters removed: ! @ # $ % - _")
 
 def check_password():
     """Returns `True` if the user had the correct password."""

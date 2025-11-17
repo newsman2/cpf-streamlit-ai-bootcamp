@@ -64,7 +64,7 @@ with st.sidebar:
     st.header("Upload & Index PDFs")
 
     collection_name = st.text_input(
-        "Collection name (unique)", key="collection_name_input"
+        "Collection name (unique)", key="collection_name_input", on_change=utility.validate_input
     )
     uploaded_files = st.file_uploader(
         "Upload PDF files", accept_multiple_files=True, type=["pdf"]
