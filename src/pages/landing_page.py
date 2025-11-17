@@ -1,12 +1,16 @@
 # Set up and run this Streamlit App
 import streamlit as st
 
-from helpers import llm, state
+from helpers import llm, state, utility
 
 state.ensure_session_states()
 
 # region <--------- Streamlit App Configuration --------->
 st.set_page_config(layout="centered", page_title="Collections")
+
+# Do not continue if check_password is not True.
+if not utility.check_password():
+    st.stop()
 # endregion <--------- Streamlit App Configuration --------->
 
 st.title("CPF Assistant")

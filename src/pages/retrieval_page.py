@@ -10,7 +10,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from agents import cpf
-from helpers import file, llm, state
+from helpers import file, llm, state, utility
 
 state.ensure_session_states()
 CHUNK_SIZE = 1000
@@ -18,6 +18,10 @@ CHUNK_OVERLAP = 200
 
 # region <--------- Streamlit App Configuration --------->
 st.set_page_config(layout="centered", page_title="Home")
+
+# Do not continue if check_password is not True.
+if not utility.check_password():
+    st.stop()
 # endregion <--------- Streamlit App Configuration --------->
 
 st.title("Retrieval (RAG)")

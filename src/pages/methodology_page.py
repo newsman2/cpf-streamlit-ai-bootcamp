@@ -1,7 +1,13 @@
 import streamlit as st
 
+from helpers import utility
+
 # region <--------- Streamlit App Configuration --------->
 st.set_page_config(layout="centered", page_title="Methodology")
+
+# Do not continue if check_password is not True.
+if not utility.check_password():
+    st.stop()
 # endregion <--------- Streamlit App Configuration --------->
 
 st.title("Methodology")
