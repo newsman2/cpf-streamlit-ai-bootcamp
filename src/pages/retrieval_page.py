@@ -192,6 +192,7 @@ else:
                             "collection_name": selected_collection,
                         }
                     )
+                    has_tool = any(isinstance(m, ToolMessage) for m in result["messages"])
                     for msg in result["messages"]:
                         # If tool returned a docx path, show download button
                         if isinstance(msg, ToolMessage):
@@ -207,10 +208,11 @@ else:
                                         filename,
                                         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                                     )
+                                    answer += "Exported file: " + filename
                             except Exception as e:
                                 st.error(f"Failed to load file: {e}")
 
-                        if isinstance(msg, AIMessage):
+                        if isinstance(msg, AIMessage) and not has_tool:
                             answer += msg.content
 
                     # store assistant answer in history
