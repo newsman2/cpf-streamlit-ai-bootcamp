@@ -35,6 +35,9 @@ st.markdown("""
             - [CPF Investment](https://www.cpf.gov.sg/content/dam/web/member/business-partners/documents/CPFInvestmentGuidelinespdf.pdf)
             - [CPF Withdrawal Rules](https://www.cpf.gov.sg/content/dam/web/member/faq/retirement-income/documents/withdrawal-rules-table.pdf)
             - [CPF Contribution Rate Table](https://www.cpf.gov.sg/content/dam/web/employer/employer-obligations/documents/CPFcontributionratesfrom1Jan2026.pdf)
+            - [CPF - Example: To receive monthly payout of $1470](https://www.cpf.gov.sg/content/dam/web/member/retirement-income/documents/CPF%20LIFE%20payout%20examples%202022.pdf)
+            - [CPF - Protecting your Home](https://www.cpf.gov.sg/content/dam/web/member/home-ownership/documents/HPS_Handbook_A_English.pdf)
+            - [CPF - MediShield Life Booklet](https://www.cpf.gov.sg/content/dam/web/member/healthcare/documents/InformationBookletForTheNewlyInsured.pdf)
             """)
 
 st.subheader("Features")
