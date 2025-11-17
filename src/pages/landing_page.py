@@ -36,7 +36,8 @@ if prompt:
 
         If you don't know the answer, just say that you don't know.
 
-        If the question is not about CPF, politely inform them that you are tuned to only answer questions about CPF.
+        If the question is not about CPF, politely inform them that you are tuned to
+        only answer questions about CPF.
         The response MUST be in the following format:
         Answer:#### <step 1 output>
         回答(概括):#### <step 2 output>
