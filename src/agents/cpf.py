@@ -13,7 +13,7 @@ from helpers import chroma
 from tools import office
 
 OPENAI_MODEL = st.secrets["OPENAI_MODEL"]
-MAX_TOKENS = st.secrets["MAX_TOKENS"]
+MAX_OUTPUT_TOKENS = st.secrets["MAX_OUTPUT_TOKENS"]
 
 
 class FileDescription(BaseModel):
@@ -52,7 +52,9 @@ class RetrieveDocumentsMiddleware(AgentMiddleware[State]):
         }
 
 
-model = init_chat_model(OPENAI_MODEL, temperature=0, timeout=10, max_tokens=MAX_TOKENS)
+model = init_chat_model(
+    OPENAI_MODEL, temperature=0, timeout=10, max_tokens=MAX_OUTPUT_TOKENS
+)
 
 
 def init_agent():

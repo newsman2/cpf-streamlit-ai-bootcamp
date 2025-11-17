@@ -11,11 +11,13 @@ from helpers import chroma
 
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 OPENAI_MODEL = st.secrets["OPENAI_MODEL"]
-MAX_TOKENS = st.secrets["MAX_TOKENS"]
+MAX_OUTPUT_TOKENS = st.secrets["MAX_OUTPUT_TOKENS"]
 
 # Pass the API Key to the OpenAI Client
 client = OpenAI(api_key=OPENAI_API_KEY)
-llm = init_chat_model(OPENAI_MODEL, temperature=0, timeout=10, max_tokens=MAX_TOKENS)
+llm = init_chat_model(
+    OPENAI_MODEL, temperature=0, timeout=10, max_tokens=MAX_OUTPUT_TOKENS
+)
 
 
 def make_retrieval_chain(collection_name: str, embeddings, llm_model=OPENAI_MODEL):
