@@ -10,7 +10,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from agents import cpf
-from helpers import file, llm, state, utility
+from helpers import file, llm, logger, state, utility
 
 state.ensure_session_states()
 CHUNK_SIZE = 1000
@@ -27,6 +27,9 @@ if not utility.check_password():
 st.title("Retrieval (RAG)")
 PERSIST_DIR = st.secrets["PERSIST_DIR"]
 OPENAI_MODEL = st.secrets["OPENAI_MODEL"]
+
+logger = logger.get_logger()
+result = {}
 
 
 def split_document(docs):
@@ -50,8 +53,8 @@ def load_documents(prompt_files) -> List:
 
     return docs
 
-
 def save_collection(collection_name, splitted_documents, embeddings_model=None):
+    logger.info(f"Saving {collection_name} collection to Chroma")
     vector_store = Chroma.from_documents(
         collection_name=collection_name,
         documents=splitted_documents,
@@ -102,6 +105,7 @@ with st.sidebar:
     try:
         # List collections by inspecting the persist directory (Chroma stores per-collection folders)
         if os.path.exists(PERSIST_DIR):
+            logger.info(f"Found existing persist directory: {PERSIST_DIR}. Loading into vector store...")
             embeddings_model = OpenAIEmbeddings(model="text-embedding-3-small")
             vector_store = Chroma(
                 embedding_function=embeddings_model,
@@ -192,6 +196,8 @@ else:
                             "collection_name": selected_collection,
                         }
                     )
+                    if result.get("context"):
+                        st.session_state.last_context = result.get("context")
                     has_tool = any(isinstance(m, ToolMessage) for m in result["messages"])
                     for msg in result["messages"]:
                         # If tool returned a docx path, show download button
@@ -236,6 +242,8 @@ else:
 
     st.markdown("---")
     st.subheader("Source documents returned (last query)")
+
+    result["context"] = st.session_state.last_context
     if "result" in locals() and result.get("context"):
         for src in result.get("context"):
             meta = getattr(src, "metadata", {})

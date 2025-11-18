@@ -20,13 +20,18 @@ st.markdown("""
 
             **Home Page**
 
-            In the home page, it is a General CPF Assistant that answers questions about
+            In the home page as shown in Figure 1 below, it is a General CPF Assistant that answers questions about
             Singapore Central Provident Fund. A summary in Chinese will also be
-            displayed for users too.
+            displayed for users too. The display is also configured to stream words in as the model response.
+ """)
 
+st.image(
+        image="./assets/cpf-assistant.png", caption="Figure 1 - CPF Assistant (Home page)")
+
+st.markdown("""
             **Retrieval Page**
 
-            In the retrieval page, it is a Retrieval Augmented Generation (RAG) page
+            In the retrieval page as shown in Figure 2 to 4 below, it is a Retrieval Augmented Generation (RAG) page
             that allows users to upload a PDF document and perform a query on the
             uploaded documents. The application processes the documents into
             embeddings using LangChain, store them in a Chroma vector database, and
@@ -37,12 +42,24 @@ st.markdown("""
             each PDF. Next, the document will undergo a chunking process
             using `RecursiveCharacterTextSplitter` with a chunk size of 1000 and chunk
             overlap of 200. Lastly, the chunked documents will be saved into
-            Chroma vector store and persisted in a file directory. """)
+            Chroma vector store and persisted in a file directory.
+            """)
 
-st.subheader("General CPF Assistant")
+st.image(image="./assets/rag-1.png", caption="Figure 2 - RAG Agent (Retrieval Page)")
+st.image(image="./assets/rag-2.png", caption="Figure 3 - RAG Agent (Retrieval Page)")
+st.image(image="./assets/rag-3.png", caption="Figure 4 - RAG Agent (Retrieval Page)")
+
+st.markdown("""
+            Similarly in the retrieval page as shown in Figure 5 and 6 below, it is a Retrieval Augmented Generation (RAG) page with *Create Word Document Tool*. With a specific prompt, the tool can be triggered to export the conversation into a word document. Thereafter, a download button will be shown for user to click to download the word document.
+            """)
+
+st.image(image="./assets/doc-tool-1.png", caption="Figure 5 - Create Word Doc Tool (Retrieval Page)")
+st.image(image="./assets/doc-tool-2.png", caption="Figure 6 - Create Word Doc Tool (Retrieval Page)")
+
+st.subheader("General CPF Assistant Flowchart")
 st.image(
     image="./assets/flowchart-general.png",
-    caption="Figure 1 - Flowchart for General CPF Assistant (Home page)",
+    caption="Figure 7 - Flowchart for General CPF Assistant (Home page)",
 )
 st.markdown(
     """
@@ -71,10 +88,10 @@ st.markdown(
     """
 )
 
-st.subheader("Retrieval Augmented Generation (RAG) with Word Document Creation Tool")
+st.subheader("Retrieval Augmented Generation (RAG) with Word Document Creation Tool Flowchart")
 st.image(
     image="./assets/flowchart-rag.png",
-    caption="Figure 2 Flowchart for RAG (Retrieval Page)",
+    caption="Figure 8 Flowchart for RAG (Retrieval Page)",
 )
 st.markdown(
     """

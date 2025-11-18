@@ -38,16 +38,20 @@ st.markdown("""
             - [CPF - Example: To receive monthly payout of $1470](https://www.cpf.gov.sg/content/dam/web/member/retirement-income/documents/CPF%20LIFE%20payout%20examples%202022.pdf)
             - [CPF - Protecting your Home](https://www.cpf.gov.sg/content/dam/web/member/home-ownership/documents/HPS_Handbook_A_English.pdf)
             - [CPF - MediShield Life Booklet](https://www.cpf.gov.sg/content/dam/web/member/healthcare/documents/InformationBookletForTheNewlyInsured.pdf)
+            - [CPF - Retirement Sum](https://www.cpf.gov.sg/member/infohub/educational-resources/what-is-the-cpf-retirement-sum)
             """)
 
 st.subheader("Features")
 st.markdown("""
             - General CPF Assistant
                 - Chatbot that answers questions about Singapore Central Provident Fund (CPF)
-            - Retrieval Augmented Generation (RAG)
+                - Chatbot that provides a summary in Chinese
+                - Chatbot that stream words in as the LLM response
+            - Retrieval Augmented Generation (RAG) with Word Document Creation Tool
                 - PDF document ingestion and parsing
                 - Automatic text chunking and metadata extraction
                 - Embedding generation using LLM embedding models
                 - Chroma vector database for similarity search
                 - Display of retrieved document chunks with source references
+                - Tool to create a word document from the conversation
             """)
